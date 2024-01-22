@@ -11,6 +11,9 @@
 #include <stdlib.h>
 
 #include <unistd.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <string.h>
 
 int
 main (int argc, char ** argv) {
@@ -31,8 +34,8 @@ main (int argc, char ** argv) {
    * more readable.
    */
   if (argc == 3) {
-    inputPathname = argv[2];
-    outputPathname = argv[3];
+    inputPathname = argv[1];
+    outputPathname = argv[2];
   } else {
     fprintf (stderr, "Incorrect number of arguments.\n");
     fprintf (stderr, "Usage: %s <input pathname> <output pathname>\n", argv[0]);
@@ -42,10 +45,11 @@ main (int argc, char ** argv) {
   /*
    * Open the input file for reading and the output file for writing.
    */
-
-  /*
-   * Read one 32-bit value from the input file and write it to the output file.
-   */
+  if ((ifd = open (inputPathname, O_RDONLY)) == -1) {
+    fprintf (stderr, "Cannot open input file %s: ", inputPathname);
+    fprintf (stderr, "%s\n", strerror(errno));
+    return -2;
+  }
 
   /*
    * Close the files.
